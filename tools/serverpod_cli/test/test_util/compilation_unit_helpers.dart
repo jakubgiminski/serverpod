@@ -29,7 +29,7 @@ abstract class CompilationUnitHelpers {
     required String name,
   }) {
     var declaration = unit.declarations.whereType<ClassDeclaration>().where(
-      (declaration) => declaration.name.toString() == name,
+      (declaration) => declaration.namePart.toString() == name,
     );
 
     return declaration.isNotEmpty ? declaration.first : null;
@@ -232,7 +232,10 @@ abstract class CompilationUnitHelpers {
     List<String>? parameters,
     List<String>? superArguments,
   }) {
-    var members = classDeclaration.members
+    var body = classDeclaration.body;
+    if (body is! BlockClassBody) return null;
+
+    var members = body.members
         .whereType<ConstructorDeclaration>()
         .where((member) => member.name?.toString() == name)
         .where((member) => member._hasMatchingParameters(parameters))
@@ -277,7 +280,10 @@ abstract class CompilationUnitHelpers {
     bool? isStatic,
     String? functionExpression,
   }) {
-    var member = classDeclaration.members
+    var body = classDeclaration.body;
+    if (body is! BlockClassBody) return null;
+
+    var member = body.members
         .whereType<MethodDeclaration>()
         .where((member) => member.name.toString() == name)
         .where((member) => member._hasMatchingStatic(isStatic))
@@ -352,7 +358,10 @@ abstract class CompilationUnitHelpers {
     bool? isLate,
     String? initializerMethod,
   }) {
-    var member = classDeclaration.members
+    var body = classDeclaration.body;
+    if (body is! BlockClassBody) return null;
+
+    var member = body.members
         .whereType<FieldDeclaration>()
         .where((member) => member._hasMatchingVariable(name))
         .where((member) => member._hasMatchingType(type))
